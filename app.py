@@ -36,7 +36,6 @@ def login():
     )
     return {"access_token": access_token}, 200
 
-
 @app.get('/api/v1/instansi')
 @jwt_required()
 def get_all_instansi():
@@ -89,6 +88,61 @@ def create_instansi():
 
     except ValidateError as e:
         return json.loads(str(e)), 422
+
+@app.put('/api/v1/instansi/<id>')
+@jwt_required()
+def update_instansi(id):
+    try:
+        nama_instansi = request.form.get('nama_instansi', None)
+        email = request.form.get('email', None)
+        password = request.form.get('password', None)
+        no_telp = request.form.get('no_telp', None)
+        alamat = request.form.get('alamat', None)
+        nomor_izin_pemerintah = request.form.get('nip', None)
+        file = request.files.get('cover', None)
+
+        # validate_create_instansi_errors(nama_instansi, email, password, no_telp, alamat, nomor_izin_pemerintah, file)
+
+        if file is not None and file.content_type not in ["image/jpeg", "image/png"]:
+            return {"msg": "Format file tidak didukung"}, 422
+
+        old_cover = instansi.get_cover(id)
+        if old_cover['cover'] is not None:
+            if os.path.exists(old_cover['cover']):
+                old_cover = old_cover['cover']
+                os.remove(old_cover)
+        # Generate proper file name
+        location = None
+
+        if file is not None:
+            filename = file.filename
+            location = 'static/uploads/' + filename
+            file.save(location)
+
+        instansi.update(
+            id = id,
+            nama_instansi = nama_instansi,
+            email = email,
+            password = password,
+            no_telp = no_telp,
+            alamat = alamat,
+            nomor_izin_pemerintah = nomor_izin_pemerintah,
+            file = location
+        )
+        return "", 200
+
+    except ValidateError as e:
+        return json.loads(str(e)), 422    
+
+@app.delete('/api/v1/instansi/<id>')
+@jwt_required()
+def delete_instansi(id):
+    try:
+        instansi.delete(id)
+    except Exception as e:
+        print(e)
+        return {"msg": "Terjadi kesalahan"}, 500
+    return "", 200
 
 if __name__ == '__main__':
     app.run(debug=True)

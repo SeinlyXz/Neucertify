@@ -38,12 +38,5 @@ def validate_create_instansi_errors(nama_instansi, email, password, no_telp, ala
     if not nomor_izin_pemerintah:
         errors.append("nomor_izin_pemerintah is required")
 
-    if file.filename == '':
-        errors.append('File name is empty!')
-    print(file.content_type)
-    if file.content_type not in ['application/pdf']:
-        errors.append('File format is not allowed!')
-
     if len(errors) > 0:
         raise ValidateError(json.dumps({"errors": errors}))
-    
