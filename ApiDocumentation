@@ -1,0 +1,358 @@
+openapi: '3.0.2'
+info:
+  title: Dokumentasi API Neucertify
+  description: |-
+    # API Sistem Layanan Sertifikat Online
+
+    ## 1. Instansi
+    - Instansi tidak bisa melihat instansi lainnya<br>
+    - Instansi tidak bisa melihat detail instansi lainnya
+    - Instansi tidak bisa mengubah atau menghapus instansi lainnya
+    - Instansi hanya bisa membuat acara ketika sudah diverifikasi oleh admin berdasarkan berkas pemerintah dan ktp
+
+    ## 2. Peserta
+    - Peserta tidak bisa melihat peserta lainnya
+    - Peserta tidak bisa melihat detail peserta lainnya
+    - Peserta tidak bisa mengubah atau menghapus peserta lainnya
+    - Peserta dapat dihapus atau diubah oleh admin dan instansi yang bersangkutan
+
+    ## 3. Sertifikat
+    - Sertifikat hanya bisa dibuat oleh instansi, admin tidak bisa
+    - Sertifikat hanya bisa dibuat oleh instansi yang bersangkutan
+    - Sertifikat hanya bisa dilihat oleh instansi dan admin dan peserta yang dikehendaki
+    - Sertifikat dapat dihapus oleh admin dan instansi yang bersangkutan
+    - Sertifikat tidak dapat diubah
+
+    ## 4. Acara
+    - Acara hanya bisa dibuat oleh instansi, admin tidak bisa
+    - Acara hanya bisa dibuat oleh instansi yang bersangkutan
+    -Acara dapat dihapus atau diubah oleh admin dan instansi yang bersangkutan
+    
+    [Chat Whatsapp untuk Bantuan API](http://wa.me/6282242873216)
+  version: '1.0'
+servers:
+  - url: http://localhost:5000
+  - url: http://localhost:5001
+  - url: http://localhost:5002
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: "Login"
+    description: "Login as Admin or Instansi"
+  - name: "Instansi"
+    description: "All about instansi"
+
+paths:
+  /auth/v1/login:
+    post:
+      tags:
+        - "Login"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: E-Mail or Password is wrong
+
+  /api/v1/instansi:
+    post:   
+      tags:
+        - "Instansi"
+      summary: "Create Instansi"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nama_instansi:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                nomor_telp:
+                  type: string
+                alamat:
+                  type: string
+                nomor_izin_pemerintah:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+    get:
+      tags:
+        - "Instansi"
+      summary: "Get Instansi List"
+      parameters:
+        - name: q
+          in: query
+          description: Cari berdasarkan nama instansi
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    nama_instansi:
+                      type: string
+                    alamat_instansi:
+                      type: string
+                    email:
+                      type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /api/v1/instansi/{id}:
+    get:
+      tags:
+        - "Instansi"
+      summary: "Get Instansi Detail"
+      parameters:
+        - name: id
+          in: path
+          description: Instansi ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  nama_instansi:
+                    type: string
+                  alamat_instansi:
+                    type: string
+                  email:
+                    type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - "Instansi"
+      summary: "Update Instansi"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nama_instansi:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                nomor_telp:
+                  type: string
+                alamat:
+                  type: string
+                nomor_izin_pemerintah:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - "Instansi"
+      summary: "Delete Instansi"
+      parameters:
+        - name: id
+          in: path
+          description: Instansi ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /api/v1/peserta:
+    post:
+      tags:
+        - "Peserta"
+      summary: "Create Peserta"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nama_peserta:
+                  type: string
+                email:
+                  type: string
+                nik:
+                  type: string
+                nomor_telp:
+                  type: string
+                instansi_id:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    get:
+      tags:
+        - "Peserta"
+      summary: "Get Peserta List"
+      parameters:
+        - name: q
+          in: query
+          description: Cari berdasarkan nama peserta
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    nama_peserta:
+                      type: string
+                    email:
+                      type: string
+                    nomor_telp:
+                      type: string
+                    alamat:
+                      type: string
+                    instansi_id:
+                      type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /api/v1/peserta/{id}:
+    get:
+      tags:
+        - "Peserta"
+      summary: "Get Peserta Detail"
+      parameters:
+        - name: id
+          in: path
+          description: Peserta ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  nama_peserta:
+                    type: string
+                  email:
+                    type: string
+                  nomor_telp:
+                    type: string
+                  alamat:
+                    type: string
+                  instansi_id:
+                    type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - "Peserta"
+      summary: "Update Peserta"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nama_peserta:
+                  type: string
+                email:
+                  type: string
+                nik:
+                  type: string
+                nomor_telp:
+                  type: string
+                instansi_id:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - "Peserta"
+      summary: "Delete Peserta"
+      parameters:
+        - name: id
+          in: path
+          description: Peserta ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+

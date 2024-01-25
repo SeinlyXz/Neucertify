@@ -1,0 +1,119 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Dokumentasi API Neucertify",
+    "description": "# Program Layanan Sertifikat Online\n\n## 1. Penggunaan Pertama\nlorem ipsum dolor sit amet consectetur\n\n## 2. Penggunaan Kedua\nlorem ipsum dolor sit amet consectetur\n\n## 3. Penggunaan Ketiga\nlorem ipsum dolor sit amet consectetur\n\n[Chat Whatsapp untuk Bantuan API](http://wa.me/6282242873216)",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    },
+    {
+      "url": "http://localhost:5001"
+    },
+    {
+      "url": "http://localhost:5002"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/v1/login": {
+      "post": {
+        "tags": [
+          "Neucertify Dokumentasi"
+        ],
+        "description": "",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "E-Mail or Password is wrong"
+          }
+        }
+      }
+    },
+    "/api/v1/instansi": {
+      "get": {
+        "tags": [
+          "Neucertify Dokumentasi"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Cari berdasarkan nama instansi",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "nama_instansi": {
+                        "type": "string"
+                      },
+                      "alamat_instansi": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  }
+}
