@@ -44,11 +44,12 @@ def validate_create_instansi_errors(nama_instansi, email, password, no_telp, ala
     if not ktp:
         errors.append("ktp is required")
 
-    if berkas_pemerintah.filetype not in ["pdf", "doc", "docx"]:
-        errors.append("berkas_pemerintah must be pdf, doc, or docx")
+    if berkas_pemerintah.content_type not in ["application/pdf"]:
+        errors.append("berkas_pemerintah must be pdf")
 
-    if ktp.filetype not in ["img", "png", "jpg", "jpeg"]:
-        errors.append("ktp must be img, png, jpg, or jpeg")
+    if ktp is not None:
+        if ktp.content_type not in ["image/img", "image/png", "image/jpg", "image/jpeg"]:
+            errors.append("ktp must be img, png, jpg, or jpeg")
 
     if len(errors) > 0:
         raise ValidateError(json.dumps({"errors": errors}))
@@ -73,6 +74,18 @@ def validate_create_peserta_error(nama, email, no_telp, id_instansi, nik, id_aca
 
     if not id_acara:
         errors.append("id_acara is required")
+
+    if len(errors) > 0:
+        raise ValidateError(json.dumps({"errors": errors}))
+    
+def validate_create_acara_error(acara, keterangan):
+    errors = []
+
+    if not acara:
+        errors.append("acara is required")
+
+    if not keterangan:
+        errors.append("keterangan is required")
 
     if len(errors) > 0:
         raise ValidateError(json.dumps({"errors": errors}))

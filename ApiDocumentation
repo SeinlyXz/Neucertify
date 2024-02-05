@@ -184,6 +184,8 @@ paths:
                   type: string
                 nomor_izin_pemerintah:
                   type: string
+                verified:
+                  type: boolean
       responses:
         "200":
           description: OK
@@ -355,4 +357,263 @@ paths:
           description: Unauthorized
       security:
         - BearerAuth: []
-
+  /api/v1/sertifikat:
+    post:
+      tags:
+        - "Sertifikat"
+      summary: "Create Sertifikat"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nama_peserta:
+                  type: string
+                id_peserta:
+                  type: string
+                instansi_id:
+                  type: string
+                acara_id:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    get:
+      tags:
+        - "Sertifikat"
+      summary: "Get Sertifikat List"
+      parameters:
+        - name: q
+          in: query
+          description: Cari berdasarkan nama peserta
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_sertifikat:
+                      type: string
+                    nama_peserta:
+                      type: string
+                    id_peserta:
+                      type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /api/v1/sertifikat/{id}:
+    get:
+      tags:
+        - "Sertifikat"
+      summary: "Get Sertifikat Detail"
+      parameters:
+        - name: id
+          in: path
+          description: Sertifikat ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id_sertifikat:
+                    type: string
+                  nama_peserta:
+                    type: string
+                  id_peserta:
+                    type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - "Sertifikat"
+      summary: "Update Sertifikat"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nama_peserta:
+                  type: string
+                id_peserta:
+                  type: string
+                instansi_id:
+                  type: string
+                acara_id:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - "Sertifikat"
+      summary: "Delete Sertifikat"
+      parameters:
+        - name: id
+          in: path
+          description: Sertifikat ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /api/v1/acara:
+    post:
+      tags:
+        - "Acara"
+      summary: "Create Acara"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nama_acara:
+                  type: string
+                tanggal_acara:
+                  type: string
+                instansi_id:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    get:
+      tags:
+        - "Acara"
+      summary: "Get Acara List"
+      parameters:
+        - name: q
+          in: query
+          description: Cari berdasarkan nama acara
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_acara:
+                      type: string
+                    nama_acara:
+                      type: string
+                    tanggal_acara:
+                      type: string
+                    instansi_id:
+                      type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /api/v1/acara/{id}:
+    get:
+      tags:
+        - "Acara"
+      summary: "Get Acara Detail"
+      parameters:
+        - name: id
+          in: path
+          description: Acara ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id_acara:
+                    type: string
+                  nama_acara:
+                    type: string
+                  tanggal_acara:
+                    type: string
+                  instansi_id:
+                    type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - "Acara"
+      summary: "Update Acara"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nama_acara:
+                  type: string
+                tanggal_acara:
+                  type: string
+                instansi_id:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - "Acara"
+      summary: "Delete Acara"
+      parameters:
+        - name: id
+          in: path
+          description: Acara ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []

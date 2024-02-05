@@ -1,0 +1,543 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Dokumentasi API Neucertify",
+    "description": "# API Sistem Layanan Sertifikat Online\n\n## 1. Instansi\n- Instansi tidak bisa melihat instansi lainnya<br>\n- Instansi tidak bisa melihat detail instansi lainnya\n- Instansi tidak bisa mengubah atau menghapus instansi lainnya\n- Instansi hanya bisa membuat acara ketika sudah diverifikasi oleh admin berdasarkan berkas pemerintah dan ktp\n\n## 2. Peserta\n- Peserta tidak bisa melihat peserta lainnya\n- Peserta tidak bisa melihat detail peserta lainnya\n- Peserta tidak bisa mengubah atau menghapus peserta lainnya\n- Peserta dapat dihapus atau diubah oleh admin dan instansi yang bersangkutan\n\n## 3. Sertifikat\n- Sertifikat hanya bisa dibuat oleh instansi, admin tidak bisa\n- Sertifikat hanya bisa dibuat oleh instansi yang bersangkutan\n- Sertifikat hanya bisa dilihat oleh instansi dan admin dan peserta yang dikehendaki\n- Sertifikat dapat dihapus oleh admin dan instansi yang bersangkutan\n- Sertifikat tidak dapat diubah\n\n## 4. Acara\n- Acara hanya bisa dibuat oleh instansi, admin tidak bisa\n- Acara hanya bisa dibuat oleh instansi yang bersangkutan\n-Acara dapat dihapus atau diubah oleh admin dan instansi yang bersangkutan\n\n[Chat Whatsapp untuk Bantuan API](http://wa.me/6282242873216)",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    },
+    {
+      "url": "http://localhost:5001"
+    },
+    {
+      "url": "http://localhost:5002"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Login",
+      "description": "Login as Admin or Instansi"
+    },
+    {
+      "name": "Instansi",
+      "description": "All about instansi"
+    }
+  ],
+  "paths": {
+    "/auth/v1/login": {
+      "post": {
+        "tags": [
+          "Login"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "E-Mail or Password is wrong"
+          }
+        }
+      }
+    },
+    "/api/v1/instansi": {
+      "post": {
+        "tags": [
+          "Instansi"
+        ],
+        "summary": "Create Instansi",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_instansi": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "nomor_telp": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "nomor_izin_pemerintah": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Instansi"
+        ],
+        "summary": "Get Instansi List",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Cari berdasarkan nama instansi",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "nama_instansi": {
+                        "type": "string"
+                      },
+                      "alamat_instansi": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/instansi/{id}": {
+      "get": {
+        "tags": [
+          "Instansi"
+        ],
+        "summary": "Get Instansi Detail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Instansi ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nama_instansi": {
+                      "type": "string"
+                    },
+                    "alamat_instansi": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Instansi"
+        ],
+        "summary": "Update Instansi",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_instansi": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "nomor_telp": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "nomor_izin_pemerintah": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Instansi"
+        ],
+        "summary": "Delete Instansi",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Instansi ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/peserta": {
+      "post": {
+        "tags": [
+          "Peserta"
+        ],
+        "summary": "Create Peserta",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_peserta": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "nik": {
+                    "type": "string"
+                  },
+                  "nomor_telp": {
+                    "type": "string"
+                  },
+                  "instansi_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Peserta"
+        ],
+        "summary": "Get Peserta List",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Cari berdasarkan nama peserta",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "nama_peserta": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "nomor_telp": {
+                        "type": "string"
+                      },
+                      "alamat": {
+                        "type": "string"
+                      },
+                      "instansi_id": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/peserta/{id}": {
+      "get": {
+        "tags": [
+          "Peserta"
+        ],
+        "summary": "Get Peserta Detail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Peserta ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nama_peserta": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "nomor_telp": {
+                      "type": "string"
+                    },
+                    "alamat": {
+                      "type": "string"
+                    },
+                    "instansi_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Peserta"
+        ],
+        "summary": "Update Peserta",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_peserta": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "nik": {
+                    "type": "string"
+                  },
+                  "nomor_telp": {
+                    "type": "string"
+                  },
+                  "instansi_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Peserta"
+        ],
+        "summary": "Delete Peserta",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Peserta ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  }
+}

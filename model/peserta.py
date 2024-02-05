@@ -61,3 +61,25 @@ def create_peserta(nama:str, email:str, no_telp:str, id_instansi:str, nik:str, i
         except DatabaseError:
             conn.rollback()
             return False
+
+def get_peserta_by_id(id):
+    with conn.cursor() as cur:
+        try:
+            cur.execute("SELECT id_peserta, nama_peserta, email, no_telp, hadir, id_instansi FROM peserta WHERE id_peserta = %(id)s", {
+                "id": id
+            })
+            peserta = cur.fetchone()
+            if peserta is None:
+                return None
+            new_peserta = {
+                "id_peserta": peserta[0],
+                "nama": peserta[1],
+                "email": peserta[2],
+                "no_telp": peserta[3],
+                "kehadiran": peserta[4],
+                "id_instansi": peserta[5]
+            }
+            return new_peserta
+        except DatabaseError:
+            conn.rollback()
+            return None
