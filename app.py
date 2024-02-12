@@ -1,3 +1,4 @@
+from functools import wraps
 import time
 from flask import Flask, request
 from flask_cors import CORS
@@ -7,6 +8,7 @@ import model.peserta as peserta
 import model.acara as acara
 import model.sertifikat as sertifikat
 import lib.generate_filename as gfn
+from lib.middleware import instansi_only, handle_validate
 import json
 from flask_jwt_extended import (
     JWTManager,
@@ -24,7 +26,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
-API_URL = '/static/neucertify1.json'  # Our API url (can of course be a local resource)
+API_URL = '/static/neucertify.json'  # Our API url (can of course be a local resource)
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
@@ -52,7 +54,7 @@ def login():
     
     access_token = create_access_token(
         identity = {
-            "email": email,
+            "email": email, # nanti dihapus
             "role": role,
             "id_user": id_user
         },
@@ -68,9 +70,9 @@ def get_all_instansi():
     try:
         current_user = get_jwt_identity()
         role = current_user["role"]
-
+        q = request.args.get('q', None)
         if role == "admin":
-            _instansi = instansi.fetchall()
+            _instansi = instansi.fetchall(q=q)
             return _instansi, 200
         else:
             _instansi = instansi.fetch_by_email(current_user['email'])
@@ -78,30 +80,35 @@ def get_all_instansi():
                 return {"msg": "Instansi tidak ditemukan"}, 404
             return _instansi, 200
 
-        if role == "admin":
-            data = instansi.fetchall(q=q)
-        else:
-            data = instansi.fetch_by_email(current_user["email"])
     except Exception as e:
         print(e)
         return {"msg": "Terjadi kesalahan"}, 500
+
+@app.get('/api/v1/instansi/me')
+@jwt_required()
+def get_instansi_me():
+    current_user = get_jwt_identity()
+    role = current_user["role"]
+    id_user = current_user["id_user"]
+    if(role == "admin"):
+        return {"msg": "Anda tidak memiliki akses"}, 403
+    instansi_ = instansi.fetch(id_user)
+    if instansi_ is None:
+        return {"msg": "Instansi tidak ditemukan"}, 404
+    return instansi_, 200
 
 @app.get('/api/v1/instansi/<id>')
 @jwt_required()
 def get_instansi(id):
     current_user = get_jwt_identity()
     role = current_user["role"]
-    id_user = current_user["id_user"]
-    if(role == "admin" or id_user == id):
+    if(role == "admin"):
         instansi_ = instansi.fetch(id)
         if instansi_ is None:
             return {"msg": "Instansi tidak ditemukan"}, 404
         return instansi_, 200
     else:
         return {"msg": "Anda tidak memiliki akses"}, 403
-    # if instansi_ is None:
-    #     return {"msg": "Instansi tidak ditemukan"}, 404
-    # return instansi_, 200
 
 @app.post('/api/v1/instansi')
 def create_instansi():
@@ -259,31 +266,28 @@ def get_peserta(id):
 
 @app.post('/api/v1/peserta')
 @jwt_required()
+@handle_validate()
 def create_peserta():
     current_user = get_jwt_identity()
     _email_instansi = current_user["email"]
     role = current_user["role"]
     if role == "admin":
         return {"msg": "Hanya instansi yang dapat membuat peserta"}, 403
-    try:
-        nama = request.form.get('nama', None)
-        email = request.form.get('email', None)
-        no_telp = request.form.get('no_telp', None)
-        nik = request.form.get('nik', None)
-        id_acara = request.form.get('id_acara', None)
-        validate_create_peserta_error(nama, email, no_telp, _email_instansi, nik, id_acara)
-        peserta.create_peserta(
-            nama=nama,
-            email=email,
-            no_telp=no_telp,
-            id_instansi=_email_instansi,
-            nik=nik,
-            id_acara=id_acara
-        )
-        return "", 201
-    except Exception as e:
-        print(e)
-        return {"msg": "Terjadi kesalahan"}, 500
+    nama = request.form.get('nama', None)
+    email = request.form.get('email', None)
+    no_telp = request.form.get('no_telp', None)
+    nik = request.form.get('nik', None)
+    id_acara = request.form.get('id_acara', None)
+    validate_create_peserta_error(nama, email, no_telp, _email_instansi, nik, id_acara)
+    peserta.create_peserta(
+        nama=nama,
+        email=email,
+        no_telp=no_telp,
+        id_instansi=_email_instansi,
+        nik=nik,
+        id_acara=id_acara
+    )
+    return "", 201
 
 @app.put('/api/v1/peserta/<id>')
 @jwt_required()
@@ -329,59 +333,48 @@ def get_acara(id):
 
 @app.post('/api/v1/acara')
 @jwt_required()
+@instansi_only("Hanya instansi yang dapat membuat acara")
+@handle_validate()
 def create_new_acara():
-    try:
-        nama_acara = request.form.get('acara', None)
-        keterangan = request.form.get('keterangan', None)
+    nama_acara = request.form.get('acara', None)
+    keterangan = request.form.get('keterangan', None)
 
-        current_user = get_jwt_identity()
-        role = current_user["role"]
-        id_user = current_user["id_user"]
+    current_user = get_jwt_identity()
+    id_user = current_user["id_user"]
 
-        if role == "admin":
-            return {"msg": "Hanya instansi yang dapat membuat acara"}, 403
+    if acara.check_is_verified(id_user) is None:
+        return {"msg": "Anda belum terverifikasi"}, 403
+    
+    validate_create_acara_error(acara, keterangan)
 
-        if acara.check_is_verified(id_user) is None:
-            return {"msg": "Anda belum terverifikasi"}, 403
-        
-        validate_create_acara_error(acara, keterangan)
-
-        id_acara = acara.create_acara(acara=nama_acara, keterangan=keterangan, id_instansi=id_user)
-        acara.create_detail_acara(id_acara)
-        return "", 201
-    except ValidateError as e:
-        return json.loads(str(e)), 422
+    id_acara = acara.create_acara(acara=nama_acara, keterangan=keterangan, id_instansi=id_user)
+    acara.create_detail_acara(id_acara)
+    return "", 201
 
 @app.put('/api/v1/acara/<id>')
 @jwt_required()
+@instansi_only("Hanya instansi yang dapat mengupdate acara")
+@handle_validate()
 def update_acara(id):
-    try:
-        current_user = get_jwt_identity()
-        role = current_user["role"]
-        id_user = current_user["id_user"]
+    current_user = get_jwt_identity()
+    id_user = current_user["id_user"]
 
-        nama_acara = request.form.get('acara', None)
-        keterangan = request.form.get('keterangan', None)
-        link = request.form.get('link', None)
-        status = request.form.get('status', None)
+    nama_acara = request.form.get('acara', None)
+    keterangan = request.form.get('keterangan', None)
+    link = request.form.get('link', None)
+    status = request.form.get('status', None)
 
-        if role == "admin":
-            return {"msg": "Hanya instansi yang dapat membuat acara"}, 403
+    if status not in ["true", "false"]:
+        return {"msg": "Status harus berupa true atau false"}, 422
 
-        if status not in ["true", "false"]:
-            return {"msg": "Status harus berupa true atau false"}, 422
+    update_status = acara.update_acara(id_acara=id, acara=nama_acara, keterangan=keterangan, id_instansi=id_user)
 
-        update_status = acara.update_acara(id_acara=id, acara=nama_acara, keterangan=keterangan, id_instansi=id_user)
+    if update_status is None:
+        return {"msg": "Acara tidak ditemukan"}, 404
+    
+    acara.update_detail_acara(id_acara=id, link=link, status=status)
 
-        if update_status is None:
-            return {"msg": "Acara tidak ditemukan"}, 404
-        
-        acara.update_detail_acara(id_acara=id, link=link, status=status)
-
-        return "", 200
-    except Exception as e:
-        print(e)
-        return {"msg": "Terjadi kesalahan"}, 500
+    return "", 200
 
 @app.delete('/api/v1/acara/<id>')
 @jwt_required()

@@ -4,6 +4,8 @@ info:
   description: |-
     # API Sistem Layanan Sertifikat Online
 
+    Neucertify adalah sebuah aplikasi RESTful API penyedia sertifikat online yang memungkinkan pengguna untuk mengakses, mengelola, dan memperoleh sertifikat secara digital melalui layanan web. Aplikasi ini dirancang untuk memudahkan proses pendaftaran, verifikasi, dan penerbitan sertifikat bagi pengguna yang membutuhkan, seperti individu, organisasi, atau lembaga. Dengan fitur-fitur seperti pendaftaran pengguna, pengajuan sertifikat, verifikasi identitas, penerbitan sertifikat, manajemen sertifikat, keamanan yang kuat, dan dokumentasi API yang komprehensif, Neucertify memberikan kemudahan dan efisiensi dalam mendapatkan sertifikat secara digital.
+
     ## 1. Instansi
     - Instansi tidak bisa melihat instansi lainnya<br>
     - Instansi tidak bisa melihat detail instansi lainnya
@@ -86,17 +88,26 @@ paths:
                   type: string
                 password:
                   type: string
-                nomor_telp:
+                no_telp:
                   type: string
                 alamat:
                   type: string
-                nomor_izin_pemerintah:
+                nip:
                   type: string
+                berkas_pemerintah:
+                  type: string
+                  format: binary
+                ktp:
+                  type: string
+                  format: binary
       responses:
         "200":
           description: OK
         "401":
           description: Unauthorized
+      security:
+        - BearerAuth: []
+      
     get:
       tags:
         - "Instansi"
@@ -126,6 +137,43 @@ paths:
                       type: string
                     email:
                       type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /api/v1/instansi/me:
+    get:
+      tags:
+        - "Instansi"
+      summary: "Get My Instansi"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  nama_instansi:
+                    type: string
+                  alamat_instansi:
+                    type: string
+                  nomor_telp:
+                    type: string
+                  nomor_izin_pemerintah:
+                    type: string
+                  cover:
+                    type: string
+                  berkas:
+                    type: string
+                  ktp:
+                    type: string
+                  verified:
+                    type: boolean
+                  email:
+                    type: string
         "401":
           description: Unauthorized
       security:
@@ -166,6 +214,13 @@ paths:
       tags:
         - "Instansi"
       summary: "Update Instansi"
+      parameters:
+        - name: id
+          in: path
+          description: Instansi ID
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           multipart/form-data:
@@ -316,6 +371,13 @@ paths:
       tags:
         - "Peserta"
       summary: "Update Peserta"
+      parameters:
+        - name: id
+          in: path
+          description: Peserta ID
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           multipart/form-data:
@@ -448,6 +510,13 @@ paths:
       tags:
         - "Sertifikat"
       summary: "Update Sertifikat"
+      parameters:
+        - name: id
+          in: path
+          description: Sertifikat ID
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           multipart/form-data:
@@ -580,6 +649,13 @@ paths:
       tags:
         - "Acara"
       summary: "Update Acara"
+      parameters:
+        - name: id
+          in: path
+          description: Acara ID
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           multipart/form-data:

@@ -8,7 +8,7 @@ def fetchall(q=None):
     with conn.cursor() as cur:
         try:
             if q is not None:
-                cur.execute("SELECT id_instansi, nama_instansi, alamat, cover, email, verified FROM instansi WHERE nama_instansi ILIKE %(nama_instansi)s", {
+                cur.execute("SELECT i.id_instansi, i.nama_instansi, i.alamat, i.cover, i.email, bi.path_ktp, bi.path_berkas_pemerintah, i.verified FROM instansi i FULL JOIN berkas_instansi bi ON i.id_instansi = bi.id_instansi WHERE i.nama_instansi ILIKE %(nama_instansi)s", {
                     "nama_instansi": f"%{q}%"
                 })
             else:
@@ -206,6 +206,8 @@ def fetch_by_email(email: str, q: str = None):
                 return None
 
             # Convert tuple to dictionary
+            data = []
+
             instansi_ = {
                 "id": instansi[0],
                 "nama_instansi": instansi[1],
@@ -213,9 +215,10 @@ def fetch_by_email(email: str, q: str = None):
                 "cover": instansi[3],
                 "email": instansi[4]
             }
+            data.append(instansi_)
         except DatabaseError:
             conn.rollback()
             return None
         finally:
             cur.close()
-    return instansi_
+    return data
