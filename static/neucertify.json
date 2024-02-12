@@ -89,13 +89,13 @@
                   "password": {
                     "type": "string"
                   },
-                  "nomor_telp": {
+                  "no_telp": {
                     "type": "string"
                   },
                   "alamat": {
                     "type": "string"
                   },
-                  "nomor_izin_pemerintah": {
+                  "nip": {
                     "type": "string"
                   },
                   "berkas_pemerintah": {
