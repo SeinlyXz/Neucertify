@@ -409,7 +409,7 @@
                   "nomor_telp": {
                     "type": "string"
                   },
-                  "instansi_id": {
+                  "id_acara": {
                     "type": "string"
                   }
                 }
