@@ -397,7 +397,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "nama_peserta": {
+                  "nama": {
                     "type": "string"
                   },
                   "email": {
@@ -406,7 +406,7 @@
                   "nik": {
                     "type": "string"
                   },
-                  "nomor_telp": {
+                  "no_telp": {
                     "type": "string"
                   },
                   "id_acara": {
@@ -877,13 +877,10 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "nama_acara": {
+                  "acara": {
                     "type": "string"
                   },
-                  "tanggal_acara": {
-                    "type": "string"
-                  },
-                  "instansi_id": {
+                  "keterangan": {
                     "type": "string"
                   }
                 }
@@ -1034,13 +1031,16 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "nama_acara": {
+                  "acara": {
                     "type": "string"
                   },
-                  "tanggal_acara": {
+                  "keterangan": {
                     "type": "string"
                   },
-                  "instansi_id": {
+                  "link": {
+                    "type": "string"
+                  },
+                  "status": {
                     "type": "string"
                   }
                 }
