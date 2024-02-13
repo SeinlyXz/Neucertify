@@ -118,12 +118,7 @@
           "401": {
             "description": "Unauthorized"
           }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
+        }
       },
       "get": {
         "tags": [
@@ -649,16 +644,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "nama_peserta": {
-                    "type": "string"
-                  },
-                  "id_peserta": {
-                    "type": "string"
-                  },
-                  "instansi_id": {
-                    "type": "string"
-                  },
-                  "acara_id": {
+                  "id_acara": {
                     "type": "string"
                   }
                 }
@@ -720,6 +706,47 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/sertifikat/generate": {
+      "post": {
+        "tags": [
+          "Sertifikat"
+        ],
+        "summary": "Generate Sertifikat",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_acara": {
+                    "type": "string"
+                  },
+                  "waktu": {
+                    "type": "string"
+                  },
+                  "id_sertifikat": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -882,6 +909,12 @@
                   },
                   "keterangan": {
                     "type": "string"
+                  },
+                  "link": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
                   }
                 }
               }
@@ -1031,16 +1064,13 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "acara": {
+                  "nama_acara": {
                     "type": "string"
                   },
-                  "keterangan": {
+                  "tanggal_acara": {
                     "type": "string"
                   },
-                  "link": {
-                    "type": "string"
-                  },
-                  "status": {
+                  "instansi_id": {
                     "type": "string"
                   }
                 }
