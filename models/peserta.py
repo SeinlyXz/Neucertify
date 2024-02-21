@@ -1,7 +1,7 @@
 from lib.db import conn
 from psycopg2.errors import DatabaseError
 
-def get_all_peserta():
+def get_all_peserta(q:str = None):
     with conn.cursor() as cur:
         try:
             cur.execute("SELECT id_peserta, nama_peserta, email, no_telp, hadir, id_instansi FROM peserta")
@@ -22,12 +22,18 @@ def get_all_peserta():
             conn.rollback()
             return None
 
-def get_all_peserta_by_instansi(email: str):
+def get_all_peserta_by_instansi(email: str, q:str = None):
     with conn.cursor() as cur:
         try:
-            cur.execute("select p.id_peserta, p.nama_peserta, p.email, p.no_telp, p.hadir, p.id_instansi from peserta p join instansi i on i.id_instansi = p.id_instansi where i.email = %(email)s", {
-                "email": email
-            })
+            if q is not None:
+                cur.execute("select p.id_peserta, p.nama_peserta, p.email, p.no_telp, p.hadir, p.id_instansi from peserta p join instansi i on i.id_instansi = p.id_instansi where i.email = %(email)s and (p.nama_peserta ilike %(query)s or p.email ilike %(query)s)", {
+                    "email": email,
+                    "query": f"%{q}%"
+                })
+            else:
+                cur.execute("select p.id_peserta, p.nama_peserta, p.email, p.no_telp, p.hadir, p.id_instansi from peserta p join instansi i on i.id_instansi = p.id_instansi where i.email = %(email)s", {
+                    "email": email
+                })
             pesertas = cur.fetchall()
             peserta_ = []
             if len(pesertas) == 0:

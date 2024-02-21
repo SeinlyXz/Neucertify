@@ -96,10 +96,13 @@ def create_acara(acara:str, keterangan:str, id_instansi:str):
             cur.execute("SELECT id_acara FROM acara ORDER BY id_acara DESC LIMIT 1")
             id_acara = cur.fetchone()
             if id_acara == None:
-                id_acara_ = "ACR1"
+                id_acara_ = "ACR000"
             else:
-                _id_acara = str(id_acara[0])
-                id_acara_ = "ACR"+str(int(_id_acara[3:])+1)
+                id_acara = str(id_acara[0])
+            id_acara = id_acara[3:]
+            # new_id = int(latest_id) + 1
+            # new_id = "INST" + str(new_id).zfill(3)
+            id_acara_ = "ACR" + str(int(id_acara) + 1).zfill(3)
             
             # Generate KD Acara
             kd_acara = acara.upper()[:3]
@@ -125,16 +128,16 @@ def create_detail_acara(id_acara:str):
             id_detail_acara = cur.fetchone()
 
             if id_detail_acara == None:
-                id_detail_acara_ = "DTL1"
+                id_detail_acara_ = "DTL000"
             else:
-                _id_detail_acara = str(id_detail_acara[0])
-                # id_acara_ = "DTL"+str(int(_id_detail_acara[3:])+1)
-                id_detail_acara_ = "DTL"+str(int(_id_detail_acara[3:])+1)
+                id_detail_acara = str(id_detail_acara[0])
+            id_detail_acara = _id_detail_acara[3:]
+            id_detail_acara_ = "DTL" + str(int(id_detail_acara) + 1).zfill(3)
 
             # Use on development only
             link = "https://meet.google.com/abc-123-xyz"
             # ------------------------
-            cur.execute("INSERT INTO detail_acara (id_detail_acara, link_acara, id_acara) VALUES (%(id_detail_acara)s, %(id_acara)s, %(link_acara)s)", {
+            cur.execute("INSERT INTO detail_acara (id_detail_acara, id_acara, link_acara) VALUES (%(id_detail_acara)s, %(id_acara)s, %(link_acara)s)", {
                 "link_acara": link,
                 "id_detail_acara": id_detail_acara_,
                 "id_acara": id_acara

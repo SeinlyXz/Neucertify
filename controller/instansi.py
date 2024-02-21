@@ -109,7 +109,7 @@ def create_instansi():
     except ValidateError as e:
         return json.loads(str(e)), 422
 
-def update_instansi():
+def update_instansi(id:str = None):
     current_user = get_jwt_identity()
     id_user = current_user["id_user"]
     role = current_user["role"]
@@ -121,14 +121,14 @@ def update_instansi():
         nama_instansi = request.form.get('nama_instansi', None)
         email = request.form.get('email', None)
         password = request.form.get('password', None)
-        no_telp = request.form.get('no_telp', None)
+        nomor_telp = request.form.get('nomor_telp', None)
         alamat = request.form.get('alamat', None)
-        nomor_izin_pemerintah = request.form.get('nip', None)
+        nomor_izin_pemerintah = request.form.get('nomor_izin_pemerintah', None)
         file = request.files.get('cover', None)
         verified = request.form.get('verified', None)
 
         if role == "user":
-            return {"msg": "Unauthorized"}, 403
+            verified = "false"
 
         if verified not in ["true", "false"]:
             return {"msg": "Verified harus berupa true atau false"}, 422
@@ -154,11 +154,11 @@ def update_instansi():
             file.save(location)
 
         instansi_model.update(
-            id = id,
+            id = id or id_user,
             nama_instansi = nama_instansi,
             email = email,
             password = password,
-            no_telp = no_telp,
+            no_telp = nomor_telp,
             alamat = alamat,
             nomor_izin_pemerintah = nomor_izin_pemerintah,
             file = location,
@@ -173,12 +173,19 @@ def delete_instansi(id):
     current_user = get_jwt_identity()
     id_user = current_user["id_user"]
     role = current_user["role"]
+
+    if role == "admin":
+        berkas_instansi_model.delete(id)
+        instansi_model.delete(id)
+        return "", 200
+
     # The current cannot editing another user
     if role == "user" and id_user != id:
         return {"msg": "Anda tidak memilki akses"}, 403
 
-    if(db.get_role(email=current_user["email"]) is None):
+    if db.get_role(email=current_user["email"]) is None:
         return {"msg": "Anda tidak memiliki akses"}, 403
 
     berkas_instansi_model.delete(id)
     instansi_model.delete(id)
+    return "", 200

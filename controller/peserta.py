@@ -10,7 +10,8 @@ def get_all_peserta():
         _peserta = peserta_model.get_all_peserta()
         return _peserta, 200
     else:
-        _peserta = peserta_model.get_all_peserta_by_instansi(current_user['email'])
+        q = request.args.get('q', None)
+        _peserta = peserta_model.get_all_peserta_by_instansi(current_user['email'], q=q)
         if _peserta is None:
             return [{"msg": "Peserta tidak ditemukan"}], 404
         return _peserta, 200

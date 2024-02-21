@@ -227,6 +227,8 @@ paths:
               properties:
                 nama_instansi:
                   type: string
+                cover:
+                  type: binary
                 email:
                   type: string
                 password:
