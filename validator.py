@@ -35,10 +35,10 @@ def validate_create_instansi_errors(nama_instansi, email, password, no_telp, ala
     if not alamat:
         errors.append("alamat is required")
 
-    if not nomor_izin_pemerintah:
+    if nomor_izin_pemerintah is None:
         errors.append("nomor_izin_pemerintah is required")
 
-    if not berkas_pemerintah:
+    if berkas_pemerintah is None:
         errors.append("berkas_pemerintah is required")
 
     if not ktp:

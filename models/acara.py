@@ -49,7 +49,7 @@ def get_all_acara_by_instansi(email:str):
 def get_acara_by_id(id_acara:str, id_user:str = None):
     with conn.cursor() as cur:
         try:
-            cur.execute("SELECT a.id_acara, a.acara, a.keterangan, da.status, da.link_acara, a. FROM acara a full JOIN detail_acara da ON a.id_acara = da.id_acara JOIN instansi i ON i.id_instansi = a.id_instansi where a.id_acara = %(id_acara)s and a.id_instansi = %(id_instansi)s", {
+            cur.execute("SELECT a.id_acara, a.acara, a.keterangan, da.status, da.link_acara, a.kd_acara FROM acara a full JOIN detail_acara da ON a.id_acara = da.id_acara JOIN instansi i ON i.id_instansi = a.id_instansi where a.id_acara = %(id_acara)s and a.id_instansi = %(id_instansi)s", {
                 "id_acara": id_acara,
                 "id_instansi": id_user
             })
@@ -63,6 +63,8 @@ def get_acara_by_id(id_acara:str, id_user:str = None):
                 "nama_acara": acara[1],
                 "keterangan": acara[2],
                 "status": acara[3],
+                "link_acara": acara[4],
+                "kd_acara": acara[5],
                 "id_instansi": id_user,
             }
             return new_acara
@@ -129,7 +131,11 @@ def create_detail_acara(id_acara:str):
                 # id_acara_ = "DTL"+str(int(_id_detail_acara[3:])+1)
                 id_detail_acara_ = "DTL"+str(int(_id_detail_acara[3:])+1)
 
-            cur.execute("INSERT INTO detail_acara (id_detail_acara, id_acara) VALUES (%(id_detail_acara)s, %(id_acara)s)", {
+            # Use on development only
+            link = "https://meet.google.com/abc-123-xyz"
+            # ------------------------
+            cur.execute("INSERT INTO detail_acara (id_detail_acara, link_acara, id_acara) VALUES (%(id_detail_acara)s, %(id_acara)s, %(link_acara)s)", {
+                "link_acara": link,
                 "id_detail_acara": id_detail_acara_,
                 "id_acara": id_acara
             })

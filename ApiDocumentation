@@ -105,8 +105,6 @@ paths:
           description: OK
         "401":
           description: Unauthorized
-      security:
-        - BearerAuth: []
       
     get:
       tags:
@@ -277,15 +275,15 @@ paths:
             schema:
               type: object
               properties:
-                nama_peserta:
+                nama:
                   type: string
                 email:
                   type: string
                 nik:
                   type: string
-                nomor_telp:
+                no_telp:
                   type: string
-                instansi_id:
+                id_acara:
                   type: string
       responses:
         "200":
@@ -419,6 +417,34 @@ paths:
           description: Unauthorized
       security:
         - BearerAuth: []
+  # /api/v1/sertifikat/generated:
+  #   get:
+  #     tags:
+  #       - "Sertifikat"
+  #     summary: "Get Sertifikat List"
+  #     parameters:
+  #       - name: q
+  #         in: query
+  #         description: Cari berdasarkan nama peserta
+  #         required: false
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 type: object
+  #                 properties:
+  #                   id_sertifikat:
+  #                     type: string
+  #       "401":
+  #         description: Unauthorized
+  #     security:
+  #       - BearerAuth: []
   /api/v1/sertifikat:
     post:
       tags:
@@ -430,13 +456,7 @@ paths:
             schema:
               type: object
               properties:
-                nama_peserta:
-                  type: string
-                id_peserta:
-                  type: string
-                instansi_id:
-                  type: string
-                acara_id:
+                id_acara:
                   type: string
       responses:
         "200":
@@ -472,6 +492,30 @@ paths:
                       type: string
                     id_peserta:
                       type: string
+        "401":
+          description: Unauthorized
+      security:
+        - BearerAuth: []
+  /api/v1/sertifikat/generate:
+    post:
+      tags:
+        - "Sertifikat"
+      summary: "Generate Sertifikat"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id_acara:
+                  type: string
+                waktu:
+                  type: string
+                id_sertifikat:
+                  type: string
+      responses:
+        "200":
+          description: OK
         "401":
           description: Unauthorized
       security:
@@ -567,11 +611,13 @@ paths:
             schema:
               type: object
               properties:
-                nama_acara:
+                acara:
                   type: string
-                tanggal_acara:
+                keterangan:
                   type: string
-                instansi_id:
+                link:
+                  type: string
+                status:
                   type: string
       responses:
         "200":

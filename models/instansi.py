@@ -82,19 +82,24 @@ def create(nama_instansi:str, email: str, password: str, no_telp: str, alamat: s
 
             cur.execute("SELECT id_instansi FROM instansi ORDER BY id_instansi DESC LIMIT 1")
             latest_id = cur.fetchone()
-            latest_id_ = int(latest_id[0][4:]) + 1
-            # Create the new id_instansi
-            id_instansi = f'INST{latest_id_}'
-
+            if latest_id is None:
+                latest_id = "INST000"
+            else:
+                latest_id = latest_id[0]
+            latest_id = latest_id[4:]
+            new_id = int(latest_id) + 1
+            new_id = "INST" + str(new_id).zfill(3)
+            print(new_id, nama_instansi, email, hashed, no_telp, alamat, nomor_izin_pemerintah, kode_instansi)
             cur.execute(
                 "INSERT INTO instansi (id_instansi, nama_instansi, email, password, nomor_telp, alamat, nomor_izin_pemerintah, kode_instansi) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                (id_instansi, nama_instansi, email, hashed, no_telp, alamat, nomor_izin_pemerintah, kode_instansi)
+                (new_id, nama_instansi, email, hashed, no_telp, alamat, nomor_izin_pemerintah, kode_instansi)
             )
             conn.commit()
                 
-            return id_instansi
+            return new_id
         except IntegrityError:
             conn.rollback()
+            print("IntegrityError")
             return None  # Indicates a duplicate key violation
         except Exception as e:
             conn.rollback()
